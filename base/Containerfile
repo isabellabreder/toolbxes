@@ -1,12 +1,12 @@
-FROM registry.fedoraproject.org/fedora-toolbox:37
+FROM registry.fedoraproject.org/fedora-toolbox:38
 
-ENV VERSION=37 NAME=base
+ENV VERSION=38 NAME=base
 
 LABEL name = $NAME \
       version = $VERSION \
       description = "Base image for building other containers in this repo" \
-      author = "Pedro Sader Azevedo <pedro.azevedo@students.ic.unicamp.br>" \
-      source = "https://github.com/pesader/toolboxes"
+      author = "Isabella Ferreira Breder <isabella.breder@students.ic.unicamp.br>" \
+      source = "https://github.com/isabellabreder/toolbxes"
 
 # speed up the package manager
 RUN echo 'fastestmirror=1' | tee -a /etc/dnf/dnf.conf
@@ -27,3 +27,29 @@ RUN dnf upgrade -y --refresh \
     && dnf install -y $(<packages) \
     && dnf clean all -y \
     && rm /packages
+
+_anaconda_version=2023.07-2
+_anaconda_file="Anaconda3-${_anaconda_version}-Linux-x86_64.sh"
+
+#install anaconda
+RUN wget https://repo.anaconda.com/archive/${_anaconda_file} \
+    && shasum -a 256 ./Anaconda3-2023.07-2-Linux-x86_64.sh \
+    && bash ./${_anaconda_file} -b \
+    && echo "y" | conda update --all \
+    && rm ${_anaconda_file} \
+    && source ./anaconda3/bin/activate \
+    && conda init \
+    && source ~/.bashrc \
+    && conda install pytz \
+    && conda install numpy \
+    && conda install pandas \
+    && conda install matplotlib \
+    && conda install seaborn \
+    && conda install matplotlib \
+    && conda install jupyter \
+    && conda install ipykernel
+
+#install vscode 
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc \
+    && printf "[vscode]\nname=packages.microsoft.com\nbaseurl=https://packages.microsoft.com/yumrepos/vscode/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc\nmetadata_expire=1h" | tee -a /etc/yum.repos.d/vscode.repo \
+    && dnf install code -y

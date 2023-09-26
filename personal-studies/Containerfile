@@ -4,7 +4,7 @@ ENV VERSION=38 NAME=base
 
 LABEL name = $NAME \
       version = $VERSION \
-      description = "Container for all IC activities" \
+      description = "Container for all curricular Unicamp activities" \
       author = "Isabella Ferreira Breder <isabella.breder@students.ic.unicamp.br>" \
       source = "https://github.com/isabellabreder/toolbxes"
 
